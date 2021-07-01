@@ -34,10 +34,8 @@ class MainActivity : AppCompatActivity() {
 
         var api = retrofit.create(ITerminalService::class.java)
         var call = api.getCity()
-        testText.text = "Вшло"
         call.enqueue(object : Callback<CityList> {
             override fun onResponse(call: Call<CityList>, response: Response<CityList>) {
-                testText.text = "Вошло"
                 var cities = response.body()
                 var city = cities?.city
                 var size = city!!.size
