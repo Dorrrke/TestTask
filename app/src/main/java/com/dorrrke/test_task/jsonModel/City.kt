@@ -6,7 +6,7 @@ data class City (
 
 	@SerializedName("id") val id : Int,
 	@SerializedName("name") val name : String,
-	@SerializedName("code") val code : Int,
+	@SerializedName("code") val code : String,
 	@SerializedName("cityID") val cityID : Int,
 	@SerializedName("latitude") val latitude : Double,
 	@SerializedName("longitude") val longitude : Double,

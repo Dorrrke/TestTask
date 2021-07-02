@@ -20,12 +20,12 @@ data class Terminal (
 	@SerializedName("addressCode") val addressCode : AddressCode,
 	@SerializedName("calcSchedule") val calcSchedule : CalcSchedule,
 	@SerializedName("default") val default : Boolean,
-	@SerializedName("maxWeight") val maxWeight : Int,
-	@SerializedName("maxLength") val maxLength : Int,
+	@SerializedName("maxWeight") val maxWeight : String,
+	@SerializedName("maxLength") val maxLength : String,
 	@SerializedName("maxWidth") val maxWidth : Double,
 	@SerializedName("maxHeight") val maxHeight : Double,
-	@SerializedName("maxVolume") val maxVolume : Int,
-	@SerializedName("maxShippingWeight") val maxShippingWeight : Int,
-	@SerializedName("maxShippingVolume") val maxShippingVolume : Int,
+	@SerializedName("maxVolume") val maxVolume : String,
+	@SerializedName("maxShippingWeight") val maxShippingWeight : String,
+	@SerializedName("maxShippingVolume") val maxShippingVolume : String,
 	@SerializedName("worktables") val worktables : Worktables
 )

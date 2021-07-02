@@ -1,29 +1,39 @@
 package com.dorrrke.test_task
 
-import City
 import CityList
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.TextView
+import androidx.core.content.ContextCompat.startActivity
+import androidx.databinding.DataBindingUtil
+import com.dorrrke.test_task.databinding.ActivityMainBinding
+import com.dorrrke.test_task.db.dbManeger
 import com.dorrrke.test_task.terminal_api.ITerminalService
-import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import kotlin.coroutines.CoroutineContext
 
 class MainActivity : AppCompatActivity() {
-    lateinit var testText: TextView
     var str: String = ""
-    var
+    val dbManeger = dbManeger(this)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        testText = findViewById(R.id.textView)
+        val binding: ActivityMainBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_main)
         parseJson()
+        binding.textView4.setOnClickListener {
+            val choice = Intent(this, ChoiceActivity::class.java)
+            startActivity(choice)
+        }
+        binding.textView5.setOnClickListener {
+            val choice = Intent(this, ChoiceActivity::class.java)
+            startActivity(choice)
+        }
     }
 
     fun parseJson() {
@@ -31,24 +41,26 @@ class MainActivity : AppCompatActivity() {
             .baseUrl("https://api.dellin.ru")
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
+        dbManeger.openDb()
         var api = retrofit.create(ITerminalService::class.java)
         var call = api.getCity()
         call.enqueue(object : Callback<CityList> {
             override fun onResponse(call: Call<CityList>, response: Response<CityList>) {
                 var cities = response.body()
-                var city = cities?.city
-                var size = city!!.size
-                str = city[0].name
-
-                testText.text = str
+                var full_terminals = cities?.city!![0].terminals.terminal
+                var size = full_terminals.size
+                str = full_terminals[0].name
+                dbManeger.clearTable()
+                for (i in 0 until size) {
+                    dbManeger.insert(full_terminals[i])
+                }
             }
 
             override fun onFailure(call: Call<CityList>, t: Throwable) {
                 Log.v("Error", t.toString())
             }
-
         })
-        }
-
     }
+
+}
+
