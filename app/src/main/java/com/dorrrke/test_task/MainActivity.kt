@@ -50,9 +50,13 @@ class MainActivity : AppCompatActivity() {
                 var full_terminals = cities?.city!![0].terminals.terminal
                 var size = full_terminals.size
                 str = full_terminals[0].name
-                dbManeger.clearTable()
+                dbManeger.clearTerminals()
+                dbManeger.clearWorktable()
                 for (i in 0 until size) {
-                    dbManeger.insert(full_terminals[i])
+                    dbManeger.insertIntoTerminals(full_terminals[i])
+                    for (t in 0 until full_terminals[i].worktables.worktable.size) {
+                        dbManeger.insertIntoWorktable(full_terminals[i].worktables.worktable[t], i+1)
+                    }
                 }
             }
 
