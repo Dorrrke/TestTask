@@ -7,6 +7,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.provider.BaseColumns
 import androidx.core.database.getStringOrNull
 import com.dorrrke.test_task.jsonModel.TerminalDb
 
@@ -38,7 +39,11 @@ class dbManeger(context: Context) {
             put(DataBase.COLUMN_NAME_RECEIVE_CARGO, terminal.receiveCargo)
             put(DataBase.COLUMN_NAME_GIVE_OUT_CARGO, terminal.giveoutCargo)
             put(DataBase.COLUMN_NAME_DEFAULT, terminal.default)
-            put(DataBase.COLUMN_NAME_MAP_URL, terminal.maps.width.bigSize.height.bigSize.url)
+            if (terminal.maps.width != null) {
+                put(DataBase.COLUMN_NAME_MAP_URL, terminal.maps.width.bigSize.height.bigSize.url)
+            } else
+                put(DataBase.COLUMN_NAME_MAP_URL, "-")
+
         }
 
         db?.insert(DataBase.TABLE_NAME_1, null, values)
@@ -61,76 +66,162 @@ class dbManeger(context: Context) {
         db?.insert(DataBase.TABLE_NAME_2, null, values)
     }
 
-    fun readDbData(): ArrayList<TerminalDb> {
+    fun readDbDataFrom(): ArrayList<TerminalDb> {
         val data = ArrayList<TerminalDb>()
         val cursor: Cursor
-        val cursorWork: Cursor
-        val sqlTerminalQuery = DataBase.SELECT_TERMINALS_FROM
-        cursor = db?.rawQuery(sqlTerminalQuery, null)!!
-        var str: String = ""
-        //while (cursor?.moveToNext()) {
-        var i : Int = 0
-        if ( cursor.moveToFirst() ) {
+        var table =
+            "SELECT * FROM ${DataBase.TABLE_NAME_1} INNER JOIN ${DataBase.TABLE_NAME_2} ON ${DataBase.TABLE_NAME_2}.terminal_id = ${DataBase.TABLE_NAME_1}.${BaseColumns._ID} WHERE ${DataBase.COLUMN_NAME_RECEIVE_CARGO} = ?"
+        var arg = arrayOf("1")
+        cursor = db?.rawQuery(table, arg)!!
+        if (cursor.moveToFirst()) {
             do {
-                var terminal = TerminalDb()
-                var worktableList = ArrayList<Worktable>()
-                if (data.isEmpty())
-                {
-                    terminal.name = cursor.getString(cursor.getColumnIndex("name"))
-                    terminal.address = cursor.getString(cursor.getColumnIndex("address"))
-                    terminal.latitude = cursor.getDouble(cursor.getColumnIndex("latitude"))
-                    terminal.longitude = cursor.getDouble(cursor.getColumnIndex("longitude"))
-                    terminal.maps = cursor.getString(cursor.getColumnIndex("maps_url"))
-                    worktableList.add(Worktable(cursor.getString(cursor.getColumnIndex("department")),
-                        cursor.getString(cursor.getColumnIndex("monday")),
-                        cursor.getString(cursor.getColumnIndex("tuesday")),
-                        cursor.getString(cursor.getColumnIndex("wednesday")),
-                        cursor.getString(cursor.getColumnIndex("thursday")),
-                        cursor.getString(cursor.getColumnIndex("friday")),
-                        cursor.getString(cursor.getColumnIndex("saturday")),
-                        cursor.getString(cursor.getColumnIndex("sunday")),
-                        cursor.getString(cursor.getColumnIndex("timetable"))))
-                    terminal.worktables = worktableList
-                    data.add(i, terminal)
-                    i++
-                }
-                else
-                {
-                    if (data[i-1].name == cursor.getString(cursor.getColumnIndex("name")))
-                    {
-                        data[i-1].worktables.add(Worktable(cursor.getString(cursor.getColumnIndex("department")),
-                            cursor.getString(cursor.getColumnIndex("monday")),
-                            cursor.getString(cursor.getColumnIndex("tuesday")),
-                            cursor.getString(cursor.getColumnIndex("wednesday")),
-                            cursor.getString(cursor.getColumnIndex("thursday")),
-                            cursor.getString(cursor.getColumnIndex("friday")),
-                            cursor.getString(cursor.getColumnIndex("saturday")),
-                            cursor.getString(cursor.getColumnIndex("sunday")),
-                            cursor.getString(cursor.getColumnIndex("timetable"))))
+                if (data.isEmpty()) {
+                    val terminal = TerminalDb()
+                    var worktableList = ArrayList<Worktable>()
+                    terminal.name = cursor?.getString(cursor.getColumnIndex("name"))
+                    terminal.address = cursor?.getString(cursor.getColumnIndex("address"))
+                    terminal.latitude = cursor?.getDouble(cursor.getColumnIndex("latitude"))
+                    terminal.longitude = cursor?.getDouble(cursor.getColumnIndex("longitude"))
+                    terminal.maps = cursor?.getString(cursor.getColumnIndex("maps_url"))
+                    data.add(terminal)
+                    worktableList.add(
+                        Worktable(
+                            cursor?.getString(cursor.getColumnIndex("department")),
+                            cursor?.getString(cursor.getColumnIndex("monday")),
+                            cursor?.getString(cursor.getColumnIndex("tuesday")),
+                            cursor?.getString(cursor.getColumnIndex("wednesday")),
+                            cursor?.getString(cursor.getColumnIndex("thursday")),
+                            cursor?.getString(cursor.getColumnIndex("friday")),
+                            cursor?.getString(cursor.getColumnIndex("saturday")),
+                            cursor?.getString(cursor.getColumnIndex("sunday")),
+                            cursor?.getString(cursor.getColumnIndex("timetable"))
+                        )
+                    )
+                    data.last().worktables = worktableList
+                } else {
+                    if (data.last().name != cursor?.getString(cursor.getColumnIndex("name"))) {
+                        val terminal = TerminalDb()
+                        var worktableList = ArrayList<Worktable>()
+                        terminal.name = cursor?.getString(cursor.getColumnIndex("name"))
+                        terminal.address = cursor?.getString(cursor.getColumnIndex("address"))
+                        terminal.latitude = cursor?.getDouble(cursor.getColumnIndex("latitude"))
+                        terminal.longitude = cursor?.getDouble(cursor.getColumnIndex("longitude"))
+                        terminal.maps = cursor?.getString(cursor.getColumnIndex("maps_url"))
+                        data.add(terminal)
+                        worktableList.add(
+                            Worktable(
+                                cursor?.getString(cursor.getColumnIndex("department")),
+                                cursor?.getString(cursor.getColumnIndex("monday")),
+                                cursor?.getString(cursor.getColumnIndex("tuesday")),
+                                cursor?.getString(cursor.getColumnIndex("wednesday")),
+                                cursor?.getString(cursor.getColumnIndex("thursday")),
+                                cursor?.getString(cursor.getColumnIndex("friday")),
+                                cursor?.getString(cursor.getColumnIndex("saturday")),
+                                cursor?.getString(cursor.getColumnIndex("sunday")),
+                                cursor?.getString(cursor.getColumnIndex("timetable"))
+                            )
+                        )
+                        data.last().worktables = worktableList
+                    } else {
+                        var worktable = Worktable(
+                            cursor?.getString(cursor.getColumnIndex("department")),
+                            cursor?.getString(cursor.getColumnIndex("monday")),
+                            cursor?.getString(cursor.getColumnIndex("tuesday")),
+                            cursor?.getString(cursor.getColumnIndex("wednesday")),
+                            cursor?.getString(cursor.getColumnIndex("thursday")),
+                            cursor?.getString(cursor.getColumnIndex("friday")),
+                            cursor?.getString(cursor.getColumnIndex("saturday")),
+                            cursor?.getString(cursor.getColumnIndex("sunday")),
+                            cursor?.getString(cursor.getColumnIndex("timetable"))
+                        )
+                        data.last().worktables.add(worktable)
                     }
-                    else
-                    {
-                        terminal.name = cursor.getString(cursor.getColumnIndex("name"))
-                        terminal.address = cursor.getString(cursor.getColumnIndex("address"))
-                        terminal.latitude = cursor.getDouble(cursor.getColumnIndex("latitude"))
-                        terminal.longitude = cursor.getDouble(cursor.getColumnIndex("longitude"))
-                        terminal.maps = cursor.getString(cursor.getColumnIndex("maps_url"))
-                        worktableList.add(Worktable(cursor.getString(cursor.getColumnIndex("department")),
-                            cursor.getString(cursor.getColumnIndex("monday")),
-                            cursor.getString(cursor.getColumnIndex("tuesday")),
-                            cursor.getString(cursor.getColumnIndex("wednesday")),
-                            cursor.getString(cursor.getColumnIndex("thursday")),
-                            cursor.getString(cursor.getColumnIndex("friday")),
-                            cursor.getString(cursor.getColumnIndex("saturday")),
-                            cursor.getString(cursor.getColumnIndex("sunday")),
-                            cursor.getString(cursor.getColumnIndex("timetable"))))
-                        terminal.worktables = worktableList
-                        data.add(i, terminal)
-                        i++
-                    }
                 }
-            }while (cursor.moveToNext())
+            } while (cursor.moveToNext())
         }
+        cursor.close()
         return data
     }
+
+    fun readDbDataTo(): ArrayList<TerminalDb> {
+        val data = ArrayList<TerminalDb>()
+        val cursor: Cursor
+        var arg = arrayOf("1", "1")
+        var table =
+            "SELECT * FROM ${DataBase.TABLE_NAME_1} INNER JOIN ${DataBase.TABLE_NAME_2} ON ${DataBase.TABLE_NAME_2}.terminal_id = ${DataBase.TABLE_NAME_1}.${BaseColumns._ID} " +
+                    "WHERE ${DataBase.COLUMN_NAME_DEFAULT} = ? AND ${DataBase.COLUMN_NAME_GIVE_OUT_CARGO} = ?"
+        cursor = db?.rawQuery(table, arg)!!
+        if (cursor.moveToFirst()) {
+            do {
+                if (data.isEmpty()) {
+                    val terminal = TerminalDb()
+                    var worktableList = ArrayList<Worktable>()
+                    terminal.name = cursor?.getString(cursor.getColumnIndex("name"))
+                    terminal.address = cursor?.getString(cursor.getColumnIndex("address"))
+                    terminal.latitude = cursor?.getDouble(cursor.getColumnIndex("latitude"))
+                    terminal.longitude = cursor?.getDouble(cursor.getColumnIndex("longitude"))
+                    terminal.maps = cursor?.getString(cursor.getColumnIndex("maps_url"))
+                    data.add(terminal)
+                    worktableList.add(
+                        Worktable(
+                            cursor?.getString(cursor.getColumnIndex("department")),
+                            cursor?.getString(cursor.getColumnIndex("monday")),
+                            cursor?.getString(cursor.getColumnIndex("tuesday")),
+                            cursor?.getString(cursor.getColumnIndex("wednesday")),
+                            cursor?.getString(cursor.getColumnIndex("thursday")),
+                            cursor?.getString(cursor.getColumnIndex("friday")),
+                            cursor?.getString(cursor.getColumnIndex("saturday")),
+                            cursor?.getString(cursor.getColumnIndex("sunday")),
+                            cursor?.getString(cursor.getColumnIndex("timetable"))
+                        )
+                    )
+                    data.last().worktables = worktableList
+                } else {
+                    if (data.last().name != cursor?.getString(cursor.getColumnIndex("name"))) {
+                        val terminal = TerminalDb()
+                        var worktableList = ArrayList<Worktable>()
+                        terminal.name = cursor?.getString(cursor.getColumnIndex("name"))
+                        terminal.address = cursor?.getString(cursor.getColumnIndex("address"))
+                        terminal.latitude = cursor?.getDouble(cursor.getColumnIndex("latitude"))
+                        terminal.longitude = cursor?.getDouble(cursor.getColumnIndex("longitude"))
+                        terminal.maps = cursor?.getString(cursor.getColumnIndex("maps_url"))
+                        data.add(terminal)
+                        worktableList.add(
+                            Worktable(
+                                cursor?.getString(cursor.getColumnIndex("department")),
+                                cursor?.getString(cursor.getColumnIndex("monday")),
+                                cursor?.getString(cursor.getColumnIndex("tuesday")),
+                                cursor?.getString(cursor.getColumnIndex("wednesday")),
+                                cursor?.getString(cursor.getColumnIndex("thursday")),
+                                cursor?.getString(cursor.getColumnIndex("friday")),
+                                cursor?.getString(cursor.getColumnIndex("saturday")),
+                                cursor?.getString(cursor.getColumnIndex("sunday")),
+                                cursor?.getString(cursor.getColumnIndex("timetable"))
+                            )
+                        )
+                        data.last().worktables = worktableList
+                    } else {
+                        var worktable = Worktable(
+                            cursor?.getString(cursor.getColumnIndex("department")),
+                            cursor?.getString(cursor.getColumnIndex("monday")),
+                            cursor?.getString(cursor.getColumnIndex("tuesday")),
+                            cursor?.getString(cursor.getColumnIndex("wednesday")),
+                            cursor?.getString(cursor.getColumnIndex("thursday")),
+                            cursor?.getString(cursor.getColumnIndex("friday")),
+                            cursor?.getString(cursor.getColumnIndex("saturday")),
+                            cursor?.getString(cursor.getColumnIndex("sunday")),
+                            cursor?.getString(cursor.getColumnIndex("timetable"))
+                        )
+                        data.last().worktables.add(worktable)
+                    }
+                }
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+        return data
+    }
+
+//    fun closeDB(){
+//        dbHelper.close()
+//    }
 }

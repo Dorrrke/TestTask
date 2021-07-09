@@ -13,17 +13,15 @@ class PagerAdapter(fm: FragmentManager, lifecycle: Lifecycle, private var number
     override fun createFragment(position: Int): Fragment {
         when (position) {
             0 -> {
-                // # Music Fragment
                 val bundle = Bundle()
-                bundle.putString("fragmentName", "Music Fragment")
+                bundle.putString("firstFragment", "Откуда")
                 val musicFragment = FirstFragment()
                 musicFragment.arguments = bundle
                 return musicFragment
             }
             1 -> {
-                // # Movies Fragment
                 val bundle = Bundle()
-                bundle.putString("fragmentName", "Movies Fragment")
+                bundle.putString("secondFragment", "Куда")
                 val moviesFragment = SecondFragment()
                 moviesFragment.arguments = bundle
                 return moviesFragment
