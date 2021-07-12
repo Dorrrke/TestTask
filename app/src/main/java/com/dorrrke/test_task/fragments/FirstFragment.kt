@@ -59,6 +59,7 @@ class FirstFragment : Fragment() {
             )
         }
         recyclerView.adapter = adapter
+        
 
 
 
