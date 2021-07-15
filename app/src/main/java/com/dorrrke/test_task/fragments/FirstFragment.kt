@@ -3,11 +3,8 @@ package com.dorrrke.test_task.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.*
 
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
 import android.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -34,20 +31,17 @@ class FirstFragment : Fragment() {
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_first, container, false)
         val fragmentName = arguments?.getString("Откуда")
-
         return rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val dbManeger = dbManeger(view.context)
         dbManeger.openDb()
         terminals = dbManeger.readDbDataFrom()
-
         val adapter = TermAdapter(terminals, 1)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycler_First)
-
-
 
         recyclerView.apply {
             layoutManager = LinearLayoutManager(view.context)
@@ -59,27 +53,20 @@ class FirstFragment : Fragment() {
             )
         }
         recyclerView.adapter = adapter
-        
 
+        val serach = view.findViewById<androidx.appcompat.widget.SearchView>(R.id.search_1)
+        serach.setOnQueryTextListener(object :
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
 
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter.filter.filter(newText)
+                return false
+            }
 
-//        adapter.onItemClick = {
-//            val choice = Intent(view.context, MainActivity::class.java)
-//            startActivity(choice)
-//        }
-
-
-//        view.findViewById<androidx.appcompat.widget.SearchView>(R.id.searchView).setOnQueryTextListener(object: androidx.appcompat.widget.SearchView.OnQueryTextListener{
-//            override fun onQueryTextSubmit(query: String?): Boolean {
-//                return false
-//            }
-//
-//            override fun onQueryTextChange(newText: String?): Boolean {
-//                adapter.filter.filter(newText)
-//                return false
-//            }
-//
-//        })
+        })
     }
 
 }

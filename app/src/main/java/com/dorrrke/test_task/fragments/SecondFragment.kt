@@ -33,6 +33,7 @@ class SecondFragment : Fragment() {
         dbManeger.openDb()
         terminals = dbManeger.readDbDataTo()
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerSecond)
+        val adapter = TermAdapter(terminals, 2)
 
         recyclerView.apply {
             layoutManager = LinearLayoutManager(view.context)
@@ -42,20 +43,23 @@ class SecondFragment : Fragment() {
                     DividerItemDecoration.VERTICAL
                 )
             )
-            adapter = TermAdapter(terminals, 2)
         }
+        recyclerView.adapter = adapter
 
-//        view.findViewById<androidx.appcompat.widget.SearchView>(R.id.search).setOnQueryTextListener(object: androidx.appcompat.widget.SearchView.OnQueryTextListener{
-//            override fun onQueryTextSubmit(query: String?): Boolean {
-//                return false
-//            }
-//
-//            override fun onQueryTextChange(newText: String?): Boolean {
-//                adapter.filter.filter(newText)
-//                return false
-//            }
-//
-//        })
+        val serach = view.findViewById<androidx.appcompat.widget.SearchView>(R.id.search_2)
+        serach.setOnQueryTextListener(object :
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                adapter.filter.filter(newText)
+                return false
+            }
+
+        })
+
     }
 
 }

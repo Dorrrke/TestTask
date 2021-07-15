@@ -1,11 +1,12 @@
 package com.dorrrke.test_task
 
 import CityList
+
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import com.dorrrke.test_task.databinding.ActivityMainBinding
 import com.dorrrke.test_task.db.dbManeger
@@ -21,7 +22,14 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MainActivity : AppCompatActivity() {
     var str: String = ""
     val dbManeger = dbManeger(this)
-    var orderList = ArrayList<Order>()
+    lateinit var textFrom: TextView
+    lateinit var textTo: TextView
+    val ORDER_KEY = "order"
+
+
+    companion object {
+        var order = Order()
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,29 +37,28 @@ class MainActivity : AppCompatActivity() {
         val binding: ActivityMainBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_main)
         parseJson()
-//        var data = dbManeger.readDbData()
-//        var str : String = ""
-//        for (i in data)
-//        {
-//            str += i.name + " /n"
-//        }
-//        binding.textView4.text = str
-        binding.textView4.setOnClickListener {
-            val choice = Intent(this, ChoiceActivity::class.java)
-            startActivity(choice)
-        }
-        binding.textView5.setOnClickListener {
-            val choice = Intent(this, ChoiceActivity::class.java)
-            startActivity(choice)
-        }
-        var order = Order()
-        order.terminalFrom = intent.getSerializableExtra("fromName") as TerminalDb?
-        order.terminalTo = intent.getSerializableExtra("toName") as TerminalDb?
-        orderList.add(order)
 
-        binding.textView4.text = orderList[0].terminalFrom?.name
-        binding.textView5.text = orderList[0].terminalTo?.name
+        textFrom = binding.textFrom
+        textTo = binding.textTo
+
+        textFrom.setOnClickListener {
+            val choice = Intent(this, ChoiceActivity::class.java)
+            startActivity(choice)
+        }
+        textTo.setOnClickListener {
+            val choice = Intent(this, ChoiceActivity::class.java)
+            startActivity(choice)
+        }
+
+        if( intent.getSerializableExtra("fromName") != null)
+            order.terminalFrom = intent.getSerializableExtra("fromName") as TerminalDb
+        if( intent.getSerializableExtra("toName") != null)
+            order.terminalTo = intent.getSerializableExtra("toName") as TerminalDb
+
+        textFrom.text = order.terminalFrom?.name
+        textTo.text = order.terminalTo?.name
     }
+
 
 
     fun parseJson() {
@@ -60,29 +67,29 @@ class MainActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         dbManeger.openDb()
-        var api = retrofit.create(ITerminalService::class.java)
-        var call = api.getCity()
+        val api = retrofit.create(ITerminalService::class.java)
+        val call = api.getCity()
         call.enqueue(object : Callback<CityList> {
             override fun onResponse(call: Call<CityList>, response: Response<CityList>) {
-                var cities = response.body()
-                var full_terminals = cities?.city!![0].terminals.terminal
-                var city = cities.city
-                var size = full_terminals.size
-                str = full_terminals[0].name
-                var url : String = ""
+                val cities = response.body()
+                val fullTerminals = cities?.city!![0].terminals.terminal
+                val city = cities.city
+                var size = fullTerminals.size
+                str = fullTerminals[0].name
+                var url: String = ""
                 dbManeger.clearTerminals()
                 dbManeger.clearWorktable()
-                var term_id = 0
+                var termId = 0
                 for (i in city.indices) {
                     for (t in city[i].terminals.terminal.indices) {
                         dbManeger.insertIntoTerminals(city[i].terminals.terminal[t])
                         for (element in city[i].terminals.terminal[t].worktables.worktable) {
                             dbManeger.insertIntoWorktable(
                                 element,
-                                term_id+1
+                                termId + 1
                             )
                         }
-                        term_id++
+                        termId++
                     }
                 }
 
@@ -92,8 +99,8 @@ class MainActivity : AppCompatActivity() {
                 Log.v("Error", t.toString())
             }
         })
-//        dbManeger.closeDB()
     }
+
 
 }
 

@@ -12,8 +12,17 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
+        <!--        <androidx.recyclerview.widget.RecyclerView-->
+        <!--            android:id="@+id/formView"-->
+        <!--            android:layout_width="184dp"-->
+        <!--            android:layout_height="417dp"-->
+        <!--            app:layout_constraintBottom_toTopOf="@+id/button3"-->
+        <!--            app:layout_constraintEnd_toStartOf="@+id/textTo"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName" />-->
+
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/textFrom"
             android:layout_width="182dp"
             android:layout_height="392dp"
             android:layout_marginStart="16dp"
@@ -26,47 +35,46 @@
 
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/textTo"
             android:layout_width="182dp"
             android:layout_height="392dp"
             android:layout_marginStart="15dp"
             android:layout_marginEnd="16dp"
+            android:clickable="true"
             android:text="TextView"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/textView4"
+            app:layout_constraintStart_toEndOf="@+id/textFrom"
             app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName2"
-            app:layout_constraintVertical_bias="0.353"
-            android:clickable="true"/>
+            app:layout_constraintVertical_bias="0.353" />
 
         <EditText
             android:id="@+id/editTextTextPersonName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="68dp"
+            android:layout_marginTop="64dp"
             android:ems="10"
+            android:gravity="center"
             android:inputType="textPersonName"
             android:text="Откуда"
-            android:gravity="center"
-            app:layout_constraintEnd_toEndOf="@+id/textView4"
+            app:layout_constraintEnd_toEndOf="@+id/textFrom"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/textView4"
+            app:layout_constraintStart_toStartOf="@+id/textFrom"
             app:layout_constraintTop_toTopOf="parent" />
 
         <EditText
             android:id="@+id/editTextTextPersonName2"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="68dp"
+            android:layout_height="0dp"
             android:ems="10"
+            android:gravity="center"
             android:inputType="textPersonName"
             android:text="Куда"
-            android:gravity="center"
-            app:layout_constraintEnd_toEndOf="@+id/textView5"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/textView5"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toBottomOf="@+id/editTextTextPersonName"
+            app:layout_constraintEnd_toEndOf="@+id/textTo"
+            app:layout_constraintStart_toStartOf="@+id/textTo"
+            app:layout_constraintTop_toTopOf="@+id/editTextTextPersonName" />
 
         <Button
             android:id="@+id/button3"

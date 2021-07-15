@@ -26,14 +26,11 @@ class ChoiceActivity : AppCompatActivity() {
             DataBindingUtil.setContentView(this, R.layout.choice_activity)
         binding.tabs.setSelectedTabIndicatorColor(Color.WHITE)
         binding.tabs.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
-        binding.tabs.tabTextColors = ContextCompat.getColorStateList(this, android.R.color.white)
+        binding.tabs.tabTextColors =
+            ContextCompat.getColorStateList(this, R.color.selectedTabTextColor)
         val adapter = PagerAdapter(supportFragmentManager, lifecycle, 2)
         binding.viewpager.adapter = adapter
         binding.viewpager.isUserInputEnabled = true
-
-
-
-
 
         TabLayoutMediator(binding.tabs, binding.viewpager) { tab, position ->
             when (position) {
@@ -44,12 +41,8 @@ class ChoiceActivity : AppCompatActivity() {
                     tab.text = "Куда"
 
                 }
-            } }.attach()
+            }
+        }.attach()
 
-    }
-
-    fun finsh()
-    {
-        this.finsh()
     }
 }

@@ -13,10 +13,9 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class TermAdapter(private val list: ArrayList<TerminalDb>, val fragment: Int) :
-    RecyclerView.Adapter<TermAdapter.TerminalViewHolder>() {
+    RecyclerView.Adapter<TermAdapter.TerminalViewHolder>(), Filterable{
 
     var terminalFilterList = ArrayList<TerminalDb>()
-    var listener : TerminalClickListener? = null
 
     init {
         terminalFilterList = list
@@ -28,7 +27,7 @@ class TermAdapter(private val list: ArrayList<TerminalDb>, val fragment: Int) :
     }
 
     override fun onBindViewHolder(holder: TerminalViewHolder, position: Int) {
-        val term: TerminalDb = list[position]
+        val term: TerminalDb = terminalFilterList[position]
         holder.bind(term)
         holder.terminalName?.setOnClickListener {
             val back = Intent(holder.itemView.context, MainActivity::class.java)
@@ -80,7 +79,36 @@ class TermAdapter(private val list: ArrayList<TerminalDb>, val fragment: Int) :
         }
     }
 
-    override fun getItemCount(): Int = list.size
+    override fun getItemCount(): Int = terminalFilterList.size
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
+                val charSearch = constraint.toString()
+                if (charSearch.isEmpty()) {
+                    terminalFilterList = list
+                } else {
+                    val resultList = ArrayList<TerminalDb>()
+                    for (row in list) {
+                        if (row.name.lowercase(Locale.ROOT).contains(charSearch.lowercase(Locale.ROOT))) {
+                            resultList.add(row)
+                        }
+                    }
+                    terminalFilterList = resultList
+                }
+                val filterResults = FilterResults()
+                filterResults.values = terminalFilterList
+                return filterResults
+            }
+
+            @Suppress("UNCHECKED_CAST")
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                terminalFilterList = results?.values as ArrayList<TerminalDb>
+                notifyDataSetChanged()
+            }
+
+        }
+    }
 
 
     inner class TerminalViewHolder(inflater: LayoutInflater, parent: ViewGroup) : RecyclerView.ViewHolder(
